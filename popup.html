@@ -3,13 +3,20 @@
     <head>
         <script>
 
+            function updateQR(data)
+            {
+
+                var qrImage = document.getElementById('image-qr');
+
+                qrImage.src = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' + data;
+
+            }
+
             function getCurrentUrlQR()
             {
                 chrome.tabs.getSelected(null, function(tab){
 
-                    var qrImage = document.getElementById('image-qr');
-
-                    qrImage.src = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' + tab.url;
+                    updateQR(tab.url);
 
                 });
             }
@@ -21,9 +28,7 @@
 
                     chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function (response) {
 
-                        var qrImage = document.getElementById('image-qr');
-
-                        qrImage.src = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' + response.data;
+                        updateQR(response.data);
 
                     });
                 });
