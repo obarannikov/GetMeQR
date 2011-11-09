@@ -26,12 +26,24 @@
 
                 chrome.tabs.getSelected(null, function(tab) {
 
-                    chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function (response) {
+                    chrome.tabs.sendRequest(tab.id, {method: 'getSelection'}, function (response) {
 
                         updateQR(response.data);
 
                     });
                 });
+            }
+
+            function getClipboardQR()
+            {
+
+                var clip = document.getElementById('clipboard-content');
+                clip.value = '';
+                clip.focus();
+                document.execCommand('paste');
+
+                updateQR(clip.value);
+
             }
             
         </script>
@@ -44,9 +56,10 @@
         <button onclick="getCurrentSelectionQR();">
             Current Selection
         </button>
-        <button>
+        <button onclick="getClipboardQR();">
             Clipboard
         </button>
         <img id="image-qr" src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http://sheepnram.com" alt="QR Code" />
+        <textarea id="clipboard-content" style="opacity: 0;"></textarea>
     </body>
 </html>
