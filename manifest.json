@@ -1,0 +1,20 @@
+{
+    "name": "GetMeQR",
+    "version": "1.0",
+    "description": "Convert current URL or selected text or clipboard content into QR Code image and displays it.",
+    "browser_action": {
+        "default_icon": "icon.png",
+        "popup": "popup.html"
+    },
+    "permissions": [
+        "tabs", "http://*/*", "https://*/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["http://*/*"],
+            "js": ["getselection.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ]
+}
