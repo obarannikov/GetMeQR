@@ -8,9 +8,25 @@
 
                 var qrImage = document.getElementById('image-qr');
                 var clip = document.getElementById('clipboard-content');
+                var link = document.getElementById('link-qr');
+                var href = 'https://chart.googleapis.com/chart?chs=342x342&cht=qr&chl=' + encodeURI(data);
 
-                qrImage.src = 'https://chart.googleapis.com/chart?chs=342x342&cht=qr&chl=' + encodeURI(data);
+                qrImage.src = href;
+                link.href = href;
                 clip.value = data;
+
+                var xhr = new XMLHttpRequest();
+                xhr.setRequestHeader("Content-Type", 'application/json');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        var resp = JSON.parse(xhr.responseText);
+                        console.log(resp);
+                    }
+                }
+                xhr.open("POST", 'https://www.googleapis.com/urlshortener/v1/url');
+                xhr.send({
+                    longUrl: href
+                });
 
             }
 
@@ -46,6 +62,26 @@
 
                 updateQR(clip.value);
 
+            }
+
+            function showQR(url)
+            {
+                chrome.windows.create({
+                        'url': 'qrcode.html',
+                        'width': 409,
+                        'height': 465,
+                        'focused': true,
+                        'type': 'popup'
+                    },
+                    function(wnd){
+
+                        var view = chrome.extension.getViews({
+                            'windowId': wnd.tabs[0].windowId
+                        })[0];
+
+                        view.document.getElementById('image-qr').src = 'https://chart.googleapis.com/chart?chs=342x342&cht=qr&chl=' + url;
+                    }
+                );
             }
             
         </script>
@@ -90,6 +126,11 @@
                 text-shadow: 1px 1px 1px rgba(255, 255, 255, .5);
             }
 
+            .block a {
+                text-decoration: none;
+                color: white;
+                text-shadow: -1px -1px 1px rgba(0, 0, 0, .5);
+            }
 
         </style>
 
@@ -112,9 +153,12 @@
                 <img id="image-qr" src="https://chart.googleapis.com/chart?chs=342x342&cht=qr&chl=http://sheepnram.com" alt="QR Code" />
             </div>
             <p>
+                <a id="link-qr" onclick="showQR(this.href);" href="https://chart.googleapis.com/chart?chs=342x342&cht=qr&chl=http://sheepnram.com">Save this QR code</a>
+            </p>
+            <p>
                 This QR contains:
             </p>
-            <textarea id="clipboard-content">http://sheepnram.com</textarea>
+            <textarea id="clipboard-content" onblur="updateQR(this.value);">http://sheepnram.com</textarea>
         </div>
     </body>
 </html>
